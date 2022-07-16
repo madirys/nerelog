@@ -12,7 +12,7 @@ module.exports = {
   devServer: {
     port: "3000",
     static: ["./public"],
-    open: true,
+    open: false,
     hot: true,
     liveReload: true,
   },
