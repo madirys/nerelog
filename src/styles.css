@@ -2,3 +2,7 @@
   display: flex;
   justify-content: space-between;
 }
+
+.list--item {
+  padding: 10px 15px;
+}
