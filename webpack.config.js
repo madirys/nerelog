@@ -9,6 +9,14 @@ const PATHS = {
   src: path.join(__dirname, "src"),
 };
 
+function collectSafelist() {
+  return {
+    standard: ['leaflet', /^leaflet-/, 'svg', 'path', 'canvas'],
+    deep: [/^leaflet-marker-/],
+    greedy: [/^leaflet-layer/]
+  }
+}
+
 module.exports = ({ mode } = { mode: "production" }) => {
   console.log(`mode is: ${mode}`);
   return {
@@ -41,9 +49,10 @@ module.exports = ({ mode } = { mode: "production" }) => {
       new MiniCssExtractPlugin({
         filename: "[name].css",
       }),
-      new PurgecssPlugin({
-        paths: glob.sync(`${PATHS.src}/**/*`, { nodir: true }),
-      }),
+      // new PurgecssPlugin({
+      //   safelist: collectSafelist(),
+      //   paths: glob.sync(`${PATHS.src}/**/*`, { nodir: true }),
+      // }),
     ],
 
     target: "web",
