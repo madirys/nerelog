@@ -1,3 +1,5 @@
+@import '~antd/dist/antd.css';
+
 .tooltip--header {
   display: flex;
   justify-content: space-between;

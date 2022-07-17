@@ -1,35 +1,79 @@
 const path = require("path");
+const glob = require("glob");
+const HTMLWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const PurgecssPlugin = require("purgecss-webpack-plugin");
 
-module.exports = {
-  mode: "development",
-  entry: "./index.js",
-  output: {
-    path: path.resolve(__dirname, "public"),
-    filename: "main.js",
-  },
+const PATHS = {
+  src: path.join(__dirname, "src"),
+};
 
-  target: "web",
-  devServer: {
-    port: "3000",
-    static: ["./public"],
-    open: false,
-    hot: true,
-    liveReload: true,
-  },
-  resolve: {
-    extensions: [".js", ".jsx", ".json", ".ts"],
-  },
-  module: {
-    rules: [
-      {
-        test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
-        use: "babel-loader",
+module.exports = ({ mode } = { mode: "production" }) => {
+  console.log(`mode is: ${mode}`);
+  return {
+    mode,
+    entry: "./src/index.js",
+    output: {
+      path: path.resolve(__dirname, "dist"),
+      filename: "[hash].[name].js",
+      clean: true,
+    },
+    optimization: {
+      splitChunks: {
+        cacheGroups: {
+          styles: {
+            name: "styles",
+            test: /\.css$/,
+            chunks: "all",
+            enforce: true,
+          },
+        },
       },
-      {
-        test: /\.css$/i,
-        use: ["style-loader", "css-loader"],
-      },
+      minimizer: [new CssMinimizerPlugin()],
+    },
+
+    plugins: [
+      new HTMLWebpackPlugin({
+        template: "./src/index.html",
+        favicon: "./src/assets/favicon.ico",
+      }),
+      new MiniCssExtractPlugin({
+        filename: "[name].css",
+      }),
+      new PurgecssPlugin({
+        paths: glob.sync(`${PATHS.src}/**/*`, { nodir: true }),
+      }),
     ],
-  },
+
+    target: "web",
+    devServer: {
+      port: "3000",
+      static: ["./dist"],
+      open: false,
+      hot: true,
+      liveReload: true,
+    },
+    resolve: {
+      extensions: [".js", ".jsx", ".json", ".ts"],
+    },
+    module: {
+      rules: [
+        {
+          test: /\.[jt]sx?$/,
+          use: "babel-loader",
+          include: path.resolve(__dirname, "src"),
+          exclude: /node_modules/,
+        },
+        {
+          test: /\.css$/,
+          use: [MiniCssExtractPlugin.loader, "css-loader"],
+        },
+        {
+          test: /\.(png|jpe?g|gif|svg)$/i,
+          type: "asset",
+        },
+      ],
+    },
+  };
 };
