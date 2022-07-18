@@ -7,7 +7,7 @@ const windowHeight = window.innerHeight;
 const OrderList = ({ orders, client }) => {
   return (
     <List>
-      <VirtualList data={orders} height={windowHeight} itemKey="id">
+      <VirtualList data={orders} itemHeight={69} height={windowHeight} itemKey="id">
         {(item) => (
           <List.Item key={item.id} className="list--item">
             <List.Item.Meta
